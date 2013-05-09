@@ -5,7 +5,7 @@ Pod::Spec.new do |s|
   s.homepage     = 'https://github.com/soffes/ssdatakit'
   s.license      = { :type => 'MIT', :file => 'LICENSE' }
   s.author       = { 'Sam Soffes' => 'sam@soff.es' }
-  s.source       = { :git => 'https://github.com/soffes/ssdatakit.git', :tag => 'v0.1.4' }
+  s.source       = { :git => 'https://github.com/naveedehmad/ssdatakit.git', :tag => 'v0.1.4' }
   s.ios.source_files = 'SSDataKit/*.{h,m}'
   s.osx.source_files = %w{SSDataKit/SSDataKit.h SSDataKit/NSManagedObjectContext+SSDataKitAdditions.* SSDataKit/SSManagedObject.* SSDataKit/SSRemoteManagedObject.*}
   s.framework  = 'CoreData'

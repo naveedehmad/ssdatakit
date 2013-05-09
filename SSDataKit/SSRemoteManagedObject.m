@@ -16,7 +16,7 @@
 
 #pragma mark -
 
-+ (id)objectWithRemoteID:(NSNumber *)remoteID {
++ (id)objectWithRemoteID:(NSString *)remoteID {
 	return [self objectWithRemoteID:remoteID context:nil];
 }
 
@@ -24,9 +24,7 @@
 + (id)objectWithRemoteID:(NSNumber *)remoteID context:(NSManagedObjectContext *)context {
 	
 	// If there isn't a suitable remoteID, we won't find the object. Return nil.
-	if (!remoteID ||
-		![remoteID respondsToSelector:@selector(integerValue)] ||
-		[remoteID integerValue] == 0) {
+	if (!remoteID || [remoteID length] == 0) {
 		return nil;
 	}
 	
@@ -49,17 +47,15 @@
 }
 
 
-+ (id)existingObjectWithRemoteID:(NSNumber *)remoteID {
++ (id)existingObjectWithRemoteID:(NSString *)remoteID {
 	return [self existingObjectWithRemoteID:remoteID context:nil];
 }
 
 
-+ (id)existingObjectWithRemoteID:(NSNumber *)remoteID context:(NSManagedObjectContext *)context {
++ (id)existingObjectWithRemoteID:(NSString *)remoteID context:(NSManagedObjectContext *)context {
 	
 	// If there isn't a suitable remoteID, we won't find the object. Return nil.
-	if (!remoteID ||
-		![remoteID respondsToSelector:@selector(integerValue)] ||
-		[remoteID integerValue] == 0) {
+	if (!remoteID || [remoteID length] == 0) {
 		return nil;
 	}
 	
@@ -71,7 +67,7 @@
 	// Create the fetch request for the ID
 	NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
 	fetchRequest.entity = [self entityWithContext:context];
-	fetchRequest.predicate = [NSPredicate predicateWithFormat:@"remoteID = %@", remoteID];
+	fetchRequest.predicate = [NSPredicate predicateWithFormat:@"remoteID == [c] %@", remoteID];
 	fetchRequest.fetchLimit = 1;
 
 	// Execute the fetch request
@@ -95,7 +91,7 @@
 	}
 	
 	// Extract the remoteID from the dictionary
-	NSNumber *remoteID = @([[dictionary objectForKey:@"id"] integerValue]);
+	NSString *remoteID = [dictionary objectForKey:@"objectId"];
 	
 	// Find object by remoteID
 	SSRemoteManagedObject *object = [[self class] objectWithRemoteID:remoteID context:context];
@@ -123,7 +119,7 @@
 	}
 	
 	// Extract the remoteID from the dictionary
-	NSNumber *remoteID = @([[dictionary objectForKey:@"id"] integerValue]);
+	NSString *remoteID = [dictionary objectForKey:@"objectId"];
 	
 	// Find object by remoteID
 	SSRemoteManagedObject *object = [[self class] existingObjectWithRemoteID:remoteID context:context];
@@ -140,15 +136,15 @@
 
 - (void)unpackDictionary:(NSDictionary *)dictionary {
 	if (!self.isRemote) {
-		self.remoteID = @([[dictionary objectForKey:@"id"] integerValue]);
+		self.remoteID = [dictionary objectForKey:@"objectId"];
 	}
 
 	if ([self respondsToSelector:@selector(setCreatedAt:)]) {
-		self.createdAt = [[self class] parseDate:dictionary[@"created_at"]];
+		self.createdAt = [[self class] parseDate:dictionary[@"createdAt"]];
 	}
 
 	if ([self respondsToSelector:@selector(setUpdatedAt:)]) {
-		self.updatedAt = [[self class] parseDate:dictionary[@"updated_at"]];
+		self.updatedAt = [[self class] parseDate:dictionary[@"updatedAt"]];
 	}
 }
 
@@ -158,7 +154,7 @@
 		return YES;
 	}
 
-	NSDate *newDate = [[self class] parseDate:dictionary[@"updated_at"]];
+	NSDate *newDate = [[self class] parseDate:dictionary[@"updatedAt"]];
 	if (newDate && [self.updatedAt compare:newDate] == NSOrderedAscending) {
 		return YES;
 	}
@@ -168,7 +164,7 @@
 
 
 - (BOOL)isRemote {
-	return self.remoteID.integerValue > 0;
+	return self.remoteID.length > 0;
 }
 
 
