@@ -21,7 +21,7 @@
 }
 
 
-+ (id)objectWithRemoteID:(NSNumber *)remoteID context:(NSManagedObjectContext *)context {
++ (id)objectWithRemoteID:(NSString *)remoteID context:(NSManagedObjectContext *)context {
 	
 	// If there isn't a suitable remoteID, we won't find the object. Return nil.
 	if (!remoteID || [remoteID length] == 0) {
